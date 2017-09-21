@@ -1,24 +1,28 @@
 module.exports = function zeros(expression) {
-  var r1 = /\d+\!\!/g, r2 = /d+\!/g;
+  var r1 = /\d+\!\!/g, r2 = /\d+\!/g;
 
   var doubleFactor = expression.match(r1);
-  expression.replace(r1, '');
-
-  var res1 = doubleFactor.length ? doubleFactor.reduce(function (prev, next) {
-    return multiply(factorialDouble(parseInt(prev), factorialDouble(parseInt(next))));
-  }, 0) : '1';
-
+  expression = expression.replace(r1, '');
   var singleFactor = expression.match(r2);
 
-  var res2 = singleFactor.length ? singleFactor.reduce(function (prev, next) {
-    return multiply(factorialSingle(parseInt(prev), factorialSingle(parseInt(next))));
-  }, 0) : '1';
+  doubleFactor = doubleFactor ? doubleFactor.map(function (item) {
+    return factorialDouble(parseInt(item) + '');
+  }) : [];
 
-  var finishRes = multiply('res1', 'res2');
+  singleFactor = singleFactor ? singleFactor.map(function (item) {
+    return factorialSingle(parseInt(item) + '');
+  }) : [];
 
-  var zeros = finishRes.match(/0/g);
+  var resultArr = doubleFactor.concat(singleFactor);
 
-  return zeros.length;
+  var resultStr = resultArr.reduce(function (prev, next) {
+    return multiply(prev, next);
+  });
+
+  for (var i = resultStr.length - 1, count = 0; i >= 0; i--) {
+    if (resultStr[i] === '0') { count++ }
+    else { return count; }
+  }  
 }
 
 function factorialSingle (num) {
@@ -74,7 +78,7 @@ function simpleMultiply (num, factor) {
 }
 
 function sum(num1, num2) {
-  var sum = 0, mem = 0, result = '', len1 = num1.length, len2 = num2.length;
+  var sum1 = 0, mem = 0, result = '', len1 = num1.length, len2 = num2.length;
 
   if (len1 > len2) {
     num2 = repeatZeros(len1 - len2) + num2;
@@ -83,15 +87,15 @@ function sum(num1, num2) {
   }
 
   for (var i = 0, len = num1.length; i < len; i++) {
-    sum = +num1[len - 1 - i] + +num2[len - 1 - i] + mem;
+    sum1 = +num1[len - 1 - i] + +num2[len - 1 - i] + mem;
 
-    if (sum > 9) {
-      mem = 1; sum = sum - 10;
+    if (sum1 > 9) {
+      mem = 1; sum1 = sum1 - 10;
     } else {
       mem = 0;
     }
 
-    result = sum + result;
+    result = sum1 + result;
   }
 
   if (mem) { result = mem + result; }
